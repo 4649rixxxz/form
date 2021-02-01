@@ -19,7 +19,7 @@ class Core
     //インスタンス化
     $this->currentController = new $this->currentController();
 
-    //$url[1]があるかどうか
+    //$url[0]があるかどうか
     if(isset($url[0])){
       //メソッドがあるかどうか
       if(method_exists($this->currentController,$url[0])){
@@ -49,6 +49,8 @@ class Core
       $url = explode('/',$url);
 
       return $url;
+    }else{
+      return null;
     }
 
   }

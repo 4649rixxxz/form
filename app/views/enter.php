@@ -24,11 +24,11 @@
     <div>
       <h4>姓</h4>
       <input type="text" name="family_name" 
-        value="<?php if(isset($_SESSION["family_name"])){echo $_SESSION["family_name"];} ?>" class="required_form">
+        value="<?php getOldInput("family_name") ?>" class="required_form">
     </div>
     <div class="left">
       <h4>名</h4>
-      <input type="text" name="name" value="<?php if(isset($_SESSION["name"])){echo $_SESSION["name"];} ?>" class="required_form">
+      <input type="text" name="name" value="<?php getOldInput("name") ?>" class="required_form">
     </div>
   </div>
 </div>
@@ -43,7 +43,7 @@
     </div>
   </div>
   <div class="item_input item_center">
-    <input type="email" name="email" value="<?php if(isset($_SESSION["email"])){echo $_SESSION["email"];}?>" class="required_form">
+    <input type="email" name="email" value="<?php getOldInput("email")?>" class="required_form">
   </div>
 </div>
 <!-- 感想 -->
@@ -58,7 +58,7 @@
   </div>
   <div class="item_input">
     <p class="attention">最大文字数300文字 現在の文字数<span id="impression_num">0</span></p>
-    <textarea name="impression" maxlength="300" id="impression" class="required_form"><?php if(isset($_SESSION["impression"])){echo $_SESSION["impression"];}?></textarea>
+    <textarea name="impression" maxlength="300" id="impression" class="required_form"><?php getOldInput("impression")?></textarea>
   </div>
 </div>
 <!-- 次回も購入したいですか -->
@@ -73,19 +73,19 @@
   </div>
   <div class="item_input">
     <div>
-      <input type="radio" name="next_buy" value="ぜひ買いたい" class="required_radio" id="definitely" <?php if(isset($_SESSION["next_buy"]) && $_SESSION["next_buy"] == "ぜひ買いたい"){echo "checked";} ?>>
+      <input type="radio" name="next_buy" value="ぜひ買いたい" class="required_radio" id="definitely" <?php getOldRadio("next_buy","ぜひ買いたい")?>>
       <label for="definitely">ぜひ買いたい</label>
     </div>
     <div>
-      <input type="radio" name="next_buy" value="機会があれば買いたい" class="required_radio" id="opportunity" <?php if(isset($_SESSION["next_buy"]) && $_SESSION["next_buy"] == "機会があれば買いたい"){echo "checked";} ?>>
+      <input type="radio" name="next_buy" value="機会があれば買いたい" class="required_radio" id="opportunity" <?php getOldRadio("next_buy","機会があれば買いたい")?>>
       <label for="opportunity">機会があれば買いたい</label>
     </div>
     <div>
-      <input type="radio" name="next_buy" value="あまり買おうと思わない" class="required_radio" id="not_really" <?php if(isset($_SESSION["next_buy"]) && $_SESSION["next_buy"] == "あまり買おうと思わない"){echo "checked";} ?>>
+      <input type="radio" name="next_buy" value="あまり買おうと思わない" class="required_radio" id="not_really" <?php getOldRadio("next_buy","あまり買おうと思わない")?>>
       <label for="not_really">あまり買おうと思わない</label>
     </div>
     <div>
-      <input type="radio" name="next_buy" value="もう買わない" class="required_radio" id="never" <?php if(isset($_SESSION["next_buy"]) && $_SESSION["next_buy"] == "もう買わない"){echo "checked";} ?>>
+      <input type="radio" name="next_buy" value="もう買わない" class="required_radio" id="never" <?php getOldRadio("next_buy","もう買わない")?>>
       <label for="never">もう買わない</label>
     </div>
     <div style="display:none;">

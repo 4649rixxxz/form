@@ -3,7 +3,7 @@
 
 class Session
 {
-  public static function setOldInput($array)
+  public static function setValue($array)
   {
     foreach($array as $key => $value){
       $_SESSION[$key] = $value;

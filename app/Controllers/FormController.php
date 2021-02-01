@@ -3,7 +3,6 @@
 class FormController extends Controller
 {
   private $post;
-  private $errors;
   private $model;
 
   public function __construct()
@@ -13,10 +12,9 @@ class FormController extends Controller
 
   public function index()
   {
-    // 気に食わない
+    // エラー時に「確認画面」から戻る際にセッション開始
     if(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] == URLROOT.'/'){
       session_start();
-      // echo "テスト";
     }
 
     $this->view('enter');
@@ -24,19 +22,20 @@ class FormController extends Controller
 
   public function confirm()
   {
+    // Post送信時
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
       $this->post = $_POST;
 
-      //改行処理、特殊文字の処理
+      //各値の処理
       foreach($this->post as $key => $value){
         //空でなければ
         if(!empty($value)){
 
+          //改行処理
           $search = ["\r\n", "\r", "\n"];
-          $replace = [PHP_EOL, PHP_EOL, PHP_EOL];
-          $value = str_replace($search, $replace,$value);
-
+          $value = str_replace($search,PHP_EOL,$value);
+          //特殊文字の処理
           $value = htmlspecialchars($value,ENT_QUOTES,"UTF-8");
 
           $this->post[$key] = $value;
@@ -44,7 +43,6 @@ class FormController extends Controller
       }
 
     
-      // var_dump($this->post);
       //バリデーションルール
       $rules = [
         'family_name' => ['required','max:10'],
@@ -65,18 +63,18 @@ class FormController extends Controller
 
       //セッションタイムアウト
       $_SESSION['timeout'] = time();
+      //セッションに格納
+      Session::setValue($this->post);
 
       //ノーエラー
       if(count($errors) == 0){
         
         //確認画面へ
-        $this->view('confirm',$this->post);
+        $this->view('confirm');
         
       }else{
         // エラー内容の格納
-        $this->post['errors'] = $errors;
-        // setOldInput
-        Session::setOldInput($this->post);
+        $_SESSION['errors'] = $errors;
         // 入力画面へリダイレクト
         redirect();
         exit();
@@ -84,8 +82,8 @@ class FormController extends Controller
       }
 
     }
-    // Post送信以外
     else{
+      // Post送信以外
       // 入力画面へリダイレクト
       redirect();
     }
@@ -100,22 +98,19 @@ class FormController extends Controller
       redirect();
       exit();
     }
-    // 5分
+    // セッションタイムアウトの場合にセッションタイムであることを表示
     if(isset($_SESSION['timeout']) && $_SESSION['timeout'] + 300 < time()){
-      $_SESSION = [];
       Session::destroy();
       echo "セッションタイムアウト<br>";
       echo "<a href='".URLROOT."'>トップページに戻る</a>";
       exit();
     }else{
-
-      $this->post = $_POST;
-      // die('成功');
-      //セッション放棄
-      $_SESSION = [];
+      //セッションタイムアウトのみ削除し、フォームの値を取り出す
+      unset($_SESSION['timeout']);
+      $this->post = $_SESSION;
+      // セッション放棄
       Session::destroy();
-      var_dump($this->post);
-      //DB処理
+      // DB処理
       if($this->model->insert($this->post)){
         //完了画面へリダイレクト
         redirect('completed');
