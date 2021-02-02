@@ -61,6 +61,8 @@ class FormController extends Controller
       session_start();
       session_regenerate_id();
 
+      //ワンタイムトークンの生成
+      $_SESSION['token'] = uniqid(bin2hex(random_bytes(1)));
       //セッションタイムアウト
       $_SESSION['timeout'] = time();
       //セッションに格納
@@ -93,9 +95,16 @@ class FormController extends Controller
   public function store()
   {
     session_start();
-    // セッションタイムアウト時の更新時のリダイレクト
-    if(empty($_SESSION['timeout'])){
+    // 不正なリクエスト、セッションタイムアウト時の更新時の入力画面へのリダイレクト
+    if(empty($_SESSION['token']) || empty($_SESSION['timeout'])){
       redirect();
+      exit();
+    }
+    //csrf対策
+    if(!isset($_POST['token']) || (isset($_POST['token']) && $_POST['token'] !== $_SESSION['token'])){
+      Session::destroy();
+      echo "不正なリクエストです<br>";
+      echo "<a href='".URLROOT."'>トップページに戻る</a>";
       exit();
     }
     // セッションタイムアウトの場合にセッションタイムであることを表示
@@ -104,20 +113,24 @@ class FormController extends Controller
       echo "セッションタイムアウト<br>";
       echo "<a href='".URLROOT."'>トップページに戻る</a>";
       exit();
-    }else{
-      //セッションタイムアウトのみ削除し、フォームの値を取り出す
-      unset($_SESSION['timeout']);
-      $this->post = $_SESSION;
-      // セッション放棄
-      Session::destroy();
-      // DB処理
-      if($this->model->insert($this->post)){
-        //完了画面へリダイレクト
-        redirect('completed');
-      }else{
-        die('しばらく時間を空けてから再度お試しください');
-      }
+    }
 
+    /* 
+      以下、正常時の処理
+    */
+    
+    //ワンタイムトークン、セッションタイムアウト削除し、フォームの値を取り出す
+    unset($_SESSION['token']);
+    unset($_SESSION['timeout']);
+    $this->post = $_SESSION;
+    // セッション放棄
+    Session::destroy();
+    // DB処理
+    if($this->model->insert($this->post)){
+      //完了画面へリダイレクト
+      redirect('completed');
+    }else{
+      die('しばらく時間を空けてから再度お試しください');
     }
 
   }

@@ -63,6 +63,7 @@
       <input type="submit" value="送信する">
     </div>
   </div>
+  <input type="hidden" name="token" value="<?php echo $_SESSION['token'];?>">
 </form>
 <?php require APPROOT . '/views/layouts/footer.php'; ?>
 
